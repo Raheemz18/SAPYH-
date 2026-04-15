@@ -4,6 +4,7 @@ import { ArrowRight, Trophy, Target, Users, Calendar } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { PLAYER_FEATURES } from '@/src/constants';
 import Logo from '@/src/components/Logo';
+import PadelBall from '@/src/components/PadelBall';
 import { useSound } from '../hooks/useSound';
 
 export default function Home() {
@@ -14,6 +15,11 @@ export default function Home() {
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Floating Balls */}
+        <PadelBall className="absolute top-1/4 left-10 opacity-20 hidden md:block" size={80} />
+        <PadelBall className="absolute bottom-1/4 right-20 opacity-30 hidden md:block" size={120} />
+        <PadelBall className="absolute top-1/3 right-1/4 opacity-10" size={60} />
+        
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
