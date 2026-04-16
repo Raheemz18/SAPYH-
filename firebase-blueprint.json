@@ -1,0 +1,26 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A player profile in the SA Padel Youth Hub.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique Firebase Auth ID." },
+        "name": { "type": "string", "description": "The player's full name." },
+        "email": { "type": "string", "description": "The player's email address." },
+        "instagram": { "type": "string", "description": "The player's Instagram handle." },
+        "age": { "type": "number", "description": "The player's age." },
+        "location": { "type": "string", "description": "The player's location." },
+        "category": { "type": "string", "description": "The player's age category (e.g., u14, u16)." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the profile was created." }
+      },
+      "required": ["uid", "name", "email", "instagram"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles indexed by their Auth UID."
+    }
+  }
+}

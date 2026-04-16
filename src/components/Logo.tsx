@@ -19,37 +19,60 @@ export default function Logo({ className, variant = 'gold' }: LogoProps) {
     white: 'text-brand-white',
   }[variant];
 
+  const racketColor = variant === 'white' ? 'white' : 'black';
+  const detailColor = variant === 'white' ? 'black' : 'white';
+
   return (
     <div className={cn("flex items-center gap-4 leading-none group", className)}>
       {/* Logo Icon */}
       <div className="relative w-16 h-16 transition-transform group-hover:scale-105 duration-300">
         <svg viewBox="0 0 100 100" className="w-full h-full">
+          <defs>
+            <linearGradient id="racketGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={variant === 'white' ? '#ffffff' : '#1a1a1a'} />
+              <stop offset="100%" stopColor={variant === 'white' ? '#e0e0e0' : '#000000'} />
+            </linearGradient>
+          </defs>
+          
           {/* Padel Racket */}
-          <g transform="rotate(-15 50 50)">
-            {/* Racket Head (Tear-drop shape) */}
+          <g transform="rotate(15 50 50)">
+            {/* Racket Frame/Rim */}
             <path 
-              d="M35 10 C15 10 5 25 5 45 C5 60 15 75 35 75 C55 75 65 60 65 45 C65 25 55 10 35 10 Z" 
-              fill="black" 
+              d="M50 8 C28 8 18 23 18 45 C18 64 33 78 50 78 C67 78 82 64 82 45 C82 23 72 8 50 8 Z" 
+              fill={variant === 'white' ? '#d1d1d1' : '#333333'} 
             />
+            
+            {/* Racket Head Surface */}
+            <path 
+              d="M50 11 C31 11 21 25 21 45 C21 61 35 74 50 74 C65 74 79 61 79 45 C79 25 69 11 50 11 Z" 
+              fill="url(#racketGradient)" 
+            />
+
             {/* Racket Holes (Structured Grid) */}
-            <g fill="white" opacity="0.2">
-              <circle cx="25" cy="25" r="1.2" /><circle cx="35" cy="25" r="1.2" /><circle cx="45" cy="25" r="1.2" />
-              <circle cx="20" cy="35" r="1.2" /><circle cx="30" cy="35" r="1.2" /><circle cx="40" cy="35" r="1.2" /><circle cx="50" cy="35" r="1.2" />
-              <circle cx="15" cy="45" r="1.2" /><circle cx="25" cy="45" r="1.2" /><circle cx="35" cy="45" r="1.2" /><circle cx="45" cy="45" r="1.2" /><circle cx="55" cy="45" r="1.2" />
-              <circle cx="20" cy="55" r="1.2" /><circle cx="30" cy="55" r="1.2" /><circle cx="40" cy="55" r="1.2" /><circle cx="50" cy="55" r="1.2" />
-              <circle cx="25" cy="65" r="1.2" /><circle cx="35" cy="65" r="1.2" /><circle cx="45" cy="65" r="1.2" />
+            <g fill={detailColor} opacity="0.25">
+              <circle cx="40" cy="28" r="1.3" /><circle cx="50" cy="28" r="1.3" /><circle cx="60" cy="28" r="1.3" />
+              <circle cx="35" cy="37" r="1.3" /><circle cx="45" cy="37" r="1.3" /><circle cx="55" cy="37" r="1.3" /><circle cx="65" cy="37" r="1.3" />
+              <circle cx="30" cy="46" r="1.3" /><circle cx="40" cy="46" r="1.3" /><circle cx="50" cy="46" r="1.3" /><circle cx="60" cy="46" r="1.3" /><circle cx="70" cy="46" r="1.3" />
+              <circle cx="35" cy="55" r="1.3" /><circle cx="45" cy="55" r="1.3" /><circle cx="55" cy="55" r="1.3" /><circle cx="65" cy="55" r="1.3" />
+              <circle cx="40" cy="64" r="1.3" /><circle cx="50" cy="64" r="1.3" /><circle cx="60" cy="64" r="1.3" />
             </g>
-            {/* Racket Bridge/Throat (Modern V-shape) */}
-            <path d="M25 75 L35 60 L45 75 L40 85 L30 85 Z" fill="black" />
-            <path d="M30 75 L35 68 L40 75 Z" fill="white" opacity="0.1" />
+
+            {/* Racket Bridge/Throat (Modern Integrated Design) */}
+            <path 
+              d="M38 74 L50 58 L62 74 L58 85 L42 85 Z" 
+              fill={variant === 'white' ? '#e0e0e0' : '#1a1a1a'} 
+            />
+            <path d="M44 74 L50 66 L56 74 Z" fill={detailColor} opacity="0.15" />
+
             {/* Racket Handle */}
-            <rect x="31" y="85" width="8" height="28" fill="black" rx="1.5" />
-            {/* Grip Texture */}
-            <g stroke="white" strokeWidth="0.8" opacity="0.2">
-              <line x1="31" y1="92" x2="39" y2="89" />
-              <line x1="31" y1="98" x2="39" y2="95" />
-              <line x1="31" y1="104" x2="39" y2="101" />
-              <line x1="31" y1="110" x2="39" y2="107" />
+            <rect x="45.5" y="85" width="9" height="28" fill={racketColor} rx="2" />
+            
+            {/* Grip Texture (More realistic wrap) */}
+            <g stroke={detailColor} strokeWidth="1" opacity="0.25">
+              <path d="M45.5 91 L54.5 88" />
+              <path d="M45.5 97 L54.5 94" />
+              <path d="M45.5 103 L54.5 100" />
+              <path d="M45.5 109 L54.5 106" />
             </g>
           </g>
 

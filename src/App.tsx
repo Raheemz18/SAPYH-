@@ -9,6 +9,7 @@ import { Navbar, Footer } from './components/Layout';
 import Chatbot from './components/Chatbot';
 import Home from './pages/Home';
 import Register from './pages/Register';
+import Login from './pages/Login';
 import Training from './pages/Training';
 import Tournaments from './pages/Tournaments';
 import Rankings from './pages/Rankings';
@@ -32,6 +33,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/training" element={<Training />} />
             <Route path="/tournaments" element={<Tournaments />} />
             <Route path="/rankings" element={<Rankings />} />

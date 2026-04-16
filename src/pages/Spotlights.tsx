@@ -32,7 +32,7 @@ export default function Spotlights() {
                   <img 
                     src={player.image} 
                     alt={player.name} 
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                    className="w-full h-full object-cover transition-all duration-700"
                     referrerPolicy="no-referrer"
                   />
                   {player.isLatest && (
@@ -92,7 +92,7 @@ export default function Spotlights() {
             </p>
             <button 
               onClick={playPing}
-              className="bg-brand-black text-brand-gold font-display font-black text-2xl px-12 py-6 uppercase italic skew-x-[-12deg] hover:scale-110 transition-all shadow-2xl"
+              className="bg-brand-black text-brand-gold font-display font-black text-2xl px-12 py-6 uppercase italic skew-x-[-12deg] hover:scale-110 active:scale-95 transition-all shadow-2xl"
             >
               <span className="skew-x-[12deg] block">Nominate a Player</span>
             </button>

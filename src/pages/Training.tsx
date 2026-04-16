@@ -25,6 +25,13 @@ export default function Training() {
     }
   ];
 
+  const videos = [
+    { id: 'x_je7cePWq0', title: 'The Bandeja: Master the Shot' },
+    { id: 'RYDynB38sNE', title: 'Padel Tips & Drills' },
+    { id: 'ZLdvlY1IIyk', title: 'The Vibora: Power & Spin' },
+    { id: 'P6wsvgqXz_A', title: 'Padel Strategy: Win More Points' },
+  ];
+
   return (
     <div className="min-h-screen pt-32 pb-20 px-6 bg-brand-black">
       <div className="max-w-7xl mx-auto">
@@ -36,27 +43,24 @@ export default function Training() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-24">
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Video Placeholders */}
-            {[1, 2, 3, 4].map((i) => (
+            {videos.map((video, i) => (
               <motion.div 
                 key={i}
-                whileHover={{ scale: 1.02 }}
-                onClick={playPing}
-                className="group relative aspect-video bg-brand-white/5 border border-brand-white/10 overflow-hidden cursor-pointer"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="group relative aspect-video bg-brand-white/5 border border-brand-white/10 overflow-hidden"
               >
-                <img 
-                  src={`https://picsum.photos/seed/padel-tennis-training-${i}/800/450`} 
-                  alt={`Training Video ${i}`} 
-                  className="w-full h-full object-cover opacity-50 group-hover:opacity-80 transition-opacity"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-brand-gold rounded-full flex items-center justify-center text-brand-black group-hover:scale-110 transition-transform">
-                    <Play fill="currentColor" size={24} />
-                  </div>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-brand-black to-transparent">
-                  <p className="font-display font-black italic text-sm uppercase">Mastering the Bandeja • Part {i}</p>
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${video.id}`}
+                  title={video.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-brand-black to-transparent pointer-events-none">
+                  <p className="font-display font-black italic text-sm uppercase text-brand-gold">{video.title}</p>
                 </div>
               </motion.div>
             ))}
@@ -88,7 +92,7 @@ export default function Training() {
                 target="_blank" 
                 rel="noopener noreferrer"
                 onClick={playPing}
-                className="flex items-center gap-2 font-display font-black text-lg border-b-2 border-brand-black pb-1 hover:text-brand-white hover:border-brand-white transition-all w-fit"
+                className="flex items-center gap-2 font-display font-black text-lg border-b-2 border-brand-black pb-1 hover:text-brand-white hover:border-brand-white active:scale-95 transition-all w-fit"
               >
                 <Instagram size={20} /> @sapAdelyouthhub
               </a>

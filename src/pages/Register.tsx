@@ -1,16 +1,25 @@
 import { useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { CheckCircle2, ArrowRight, Instagram, Phone, Upload, Trophy } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Instagram, Phone, Upload, Trophy, Lock, Mail, User as UserIcon } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useSound } from '../hooks/useSound';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db, OperationType, handleFirestoreError } from '@/src/lib/firebase';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Register() {
   const { playPing } = useSound();
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     surname: '',
     email: '',
+    password: '',
+    instagram: '',
     contactNumber: '',
     province: '',
     country: 'South Africa',
@@ -34,16 +43,63 @@ export default function Register() {
     });
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     playPing();
+    setError(null);
+
     if (formData.ageCategories.length === 0) {
-      alert('Please select at least one age category.');
+      setError('Please select at least one age category.');
       return;
     }
-    // In a real app, you'd send this to a backend/form service
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 1. Create Auth User
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const user = userCredential.user;
+
+      // 2. Create Firestore Profile
+      const userProfile = {
+        uid: user.uid,
+        name: `${formData.name} ${formData.surname}`,
+        email: formData.email,
+        instagram: formData.instagram.startsWith('@') ? formData.instagram : `@${formData.instagram}`,
+        contactNumber: formData.contactNumber,
+        province: formData.province,
+        country: formData.country,
+        gender: formData.gender,
+        ageCategories: formData.ageCategories,
+        parentGuardianId: formData.parentGuardianId,
+        playerId: formData.playerId,
+        createdAt: serverTimestamp(),
+        role: 'player'
+      };
+
+      const path = `users/${user.uid}`;
+      try {
+        await setDoc(doc(db, 'users', user.uid), userProfile);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.CREATE, path);
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      if (err.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Try logging in instead.');
+      } else {
+        setError(err.message || 'An error occurred during registration.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -160,17 +216,57 @@ export default function Register() {
               </div>
             </div>
 
-            <div>
-              <label className="block font-display font-black text-sm uppercase mb-2 italic">Email Address</label>
-              <input 
-                required
-                type="email" 
-                className="w-full bg-brand-black/5 border-2 border-brand-black/10 px-4 py-3 focus:border-brand-gold outline-none transition-colors"
-                placeholder="email@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block font-display font-black text-sm uppercase mb-2 italic">Email Address</label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-black/30" size={18} />
+                  <input 
+                    required
+                    type="email" 
+                    className="w-full bg-brand-black/5 border-2 border-brand-black/10 pl-12 pr-4 py-3 focus:border-brand-gold outline-none transition-colors"
+                    placeholder="email@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block font-display font-black text-sm uppercase mb-2 italic">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-black/30" size={18} />
+                  <input 
+                    required
+                    type="password" 
+                    className="w-full bg-brand-black/5 border-2 border-brand-black/10 pl-12 pr-4 py-3 focus:border-brand-gold outline-none transition-colors"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  />
+                </div>
+              </div>
             </div>
+
+            <div>
+              <label className="block font-display font-black text-sm uppercase mb-2 italic">Instagram Handle</label>
+              <div className="relative">
+                <Instagram className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-black/30" size={18} />
+                <input 
+                  required
+                  type="text" 
+                  className="w-full bg-brand-black/5 border-2 border-brand-black/10 pl-12 pr-4 py-3 focus:border-brand-gold outline-none transition-colors"
+                  placeholder="@username"
+                  value={formData.instagram}
+                  onChange={(e) => setFormData({...formData, instagram: e.target.value})}
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="bg-red-500/10 border-l-4 border-red-500 p-4 text-red-500 text-sm font-bold uppercase italic">
+                {error}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -292,15 +388,16 @@ export default function Register() {
 
             <button 
               type="submit"
-              className="w-full bg-brand-gold text-brand-black font-display font-black text-xl py-5 uppercase italic skew-x-[-6deg] hover:scale-[1.02] transition-all flex items-center justify-center gap-3 mt-8"
+              disabled={loading}
+              className="w-full bg-brand-gold text-brand-black font-display font-black text-xl py-5 uppercase italic skew-x-[-6deg] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="skew-x-[6deg] flex items-center gap-2">
-                Register Profile <ArrowRight size={20} />
+                {loading ? 'Creating Profile...' : 'Register Profile'} <ArrowRight size={20} />
               </span>
             </button>
             
             <p className="text-center text-xs text-brand-black/40 font-medium uppercase tracking-widest">
-              Registration is 100% free.
+              Already have a profile? <Link to="/login" className="text-brand-black font-black hover:text-brand-gold transition-colors">Log In Here</Link>
             </p>
           </form>
         </motion.div>

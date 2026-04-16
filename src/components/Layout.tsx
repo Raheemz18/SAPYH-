@@ -1,20 +1,30 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, Instagram } from 'lucide-react';
+import { Menu, X, Instagram, MessageCircle, LogOut, User as UserIcon } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import Logo from './Logo';
+import { useAuth } from '../context/AuthContext';
+import { signOut } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, profile } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate('/');
+  };
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -33,7 +43,7 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <Logo className="scale-75 origin-left" />
+          <Logo className="scale-75 origin-left" variant={scrolled ? 'white' : 'gold'} />
         </Link>
 
         {/* Desktop Nav */}
@@ -50,12 +60,39 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
-          <Link
-            to="/register"
-            className="bg-brand-gold text-brand-black font-display font-black px-6 py-2 uppercase italic skew-x-[-12deg] hover:scale-105 transition-transform"
-          >
-            <span className="skew-x-[12deg] block">Register Profile</span>
-          </Link>
+          
+          {user ? (
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 bg-brand-white/10 px-4 py-2 rounded-sm border border-brand-gold/20">
+                <UserIcon size={16} className="text-brand-gold" />
+                <span className="text-brand-white font-bold text-sm uppercase truncate max-w-[120px]">
+                  {profile?.name || user.email?.split('@')[0]}
+                </span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="text-brand-white/60 hover:text-brand-gold transition-colors"
+                title="Logout"
+              >
+                <LogOut size={20} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <Link
+                to="/login"
+                className="text-brand-white font-accent text-xl uppercase tracking-wider hover:text-brand-gold transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="bg-brand-gold text-brand-black font-display font-black px-6 py-2 uppercase italic skew-x-[-12deg] hover:scale-105 transition-transform"
+              >
+                <span className="skew-x-[12deg] block">Register Profile</span>
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -86,13 +123,43 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <Link
-              to="/register"
-              onClick={() => setIsOpen(false)}
-              className="bg-brand-gold text-brand-black font-display font-black px-6 py-3 uppercase italic text-center"
-            >
-              Register Profile
-            </Link>
+            
+            {user ? (
+              <>
+                <div className="flex items-center gap-3 bg-brand-white/10 p-4 border border-brand-gold/20">
+                  <UserIcon size={20} className="text-brand-gold" />
+                  <span className="text-brand-white font-black uppercase italic">
+                    {profile?.name || user.email}
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center justify-center gap-2 bg-brand-white/5 text-brand-white font-display font-black px-6 py-3 uppercase italic"
+                >
+                  <LogOut size={20} /> Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="text-brand-white font-accent text-2xl uppercase tracking-wider text-center"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setIsOpen(false)}
+                  className="bg-brand-gold text-brand-black font-display font-black px-6 py-3 uppercase italic text-center"
+                >
+                  Register Profile
+                </Link>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -134,7 +201,14 @@ export function Footer() {
           </a>
           <div className="bg-brand-gold/5 border border-brand-gold/20 p-4 rounded-sm italic">
             <p className="text-sm text-brand-gold font-medium">Join our WhatsApp Community</p>
-            <Link to="/register" className="text-xs underline hover:text-brand-white transition-colors">Register to get the link</Link>
+            <a 
+              href="https://chat.whatsapp.com/GMWoTLYYVGI9V1EWBhXmy3" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-xs underline hover:text-brand-white transition-colors"
+            >
+              Click here to join the group
+            </a>
           </div>
         </div>
       </div>
