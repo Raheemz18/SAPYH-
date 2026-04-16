@@ -399,6 +399,9 @@ export default function Register() {
             <p className="text-center text-xs text-brand-black/40 font-medium uppercase tracking-widest">
               Already have a profile? <Link to="/login" className="text-brand-black font-black hover:text-brand-gold transition-colors">Log In Here</Link>
             </p>
+            <p className="text-center text-[10px] text-brand-black/30 font-bold uppercase tracking-[0.2em] mt-4">
+              Not a player? <Link to="/select-type" className="text-brand-black hover:text-brand-gold transition-colors underline">Change Portal</Link>
+            </p>
           </form>
         </motion.div>
       </div>

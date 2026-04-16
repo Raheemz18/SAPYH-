@@ -107,7 +107,7 @@ export default function Login() {
           <div className="text-center space-y-4 pt-4">
             <p className="text-xs text-brand-black/40 font-medium uppercase tracking-widest">
               Don't have a profile yet? <br />
-              <Link to="/register" className="text-brand-black font-black hover:text-brand-gold transition-colors">Register Here</Link>
+              <Link to="/select-type" className="text-brand-black font-black hover:text-brand-gold transition-colors">Register Here</Link>
             </p>
           </div>
         </form>

@@ -1,11 +1,23 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, collection, query, orderBy } from 'firebase/firestore';
 import { auth, db, OperationType, handleFirestoreError } from '@/src/lib/firebase';
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'tournament' | 'ranking' | 'system';
+  read: boolean;
+  createdAt: any;
+  link?: string;
+}
 
 interface AuthContextType {
   user: User | null;
   profile: any | null;
+  role: 'player' | 'parent' | 'organizer' | 'admin' | null;
+  notifications: Notification[];
   loading: boolean;
   isAuthReady: boolean;
 }
@@ -13,6 +25,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   profile: null,
+  role: null,
+  notifications: [],
   loading: true,
   isAuthReady: false,
 });
@@ -22,6 +36,8 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
+  const [role, setRole] = useState<'player' | 'parent' | 'organizer' | 'admin' | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAuthReady, setIsAuthReady] = useState(false);
 
@@ -31,6 +47,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthReady(true);
       if (!user) {
         setProfile(null);
+        setRole(null);
+        setNotifications([]);
         setLoading(false);
       }
     });
@@ -40,29 +58,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (user) {
-      const path = `users/${user.uid}`;
-      const unsubscribe = onSnapshot(
+      const profilePath = `users/${user.uid}`;
+      const unsubProfile = onSnapshot(
         doc(db, 'users', user.uid),
         (snapshot) => {
           if (snapshot.exists()) {
-            setProfile(snapshot.data());
+            const data = snapshot.data();
+            setProfile(data);
+            setRole(data.role);
           } else {
             setProfile(null);
+            setRole(null);
           }
           setLoading(false);
         },
         (error) => {
-          handleFirestoreError(error, OperationType.GET, path);
+          handleFirestoreError(error, OperationType.GET, profilePath);
           setLoading(false);
         }
       );
 
-      return () => unsubscribe();
+      const notificationsPath = `users/${user.uid}/notifications`;
+      const unsubNotifications = onSnapshot(
+        query(collection(db, 'users', user.uid, 'notifications'), orderBy('createdAt', 'desc')),
+        (snapshot) => {
+          const newNotifications = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Notification[];
+          setNotifications(newNotifications);
+        },
+        (error) => {
+          handleFirestoreError(error, OperationType.GET, notificationsPath);
+        }
+      );
+
+      return () => {
+        unsubProfile();
+        unsubNotifications();
+      };
     }
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, isAuthReady }}>
+    <AuthContext.Provider value={{ user, profile, role, notifications, loading, isAuthReady }}>
       {children}
     </AuthContext.Provider>
   );

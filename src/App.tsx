@@ -9,6 +9,10 @@ import { Navbar, Footer } from './components/Layout';
 import Chatbot from './components/Chatbot';
 import Home from './pages/Home';
 import Register from './pages/Register';
+import ParentRegister from './pages/ParentRegister';
+import OrganizerRegister from './pages/OrganizerRegister';
+import OrganizerPortal from './pages/OrganizerPortal';
+import UserTypeSelection from './pages/UserTypeSelection';
 import Login from './pages/Login';
 import Training from './pages/Training';
 import Tournaments from './pages/Tournaments';
@@ -32,7 +36,11 @@ export default function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/select-type" element={<UserTypeSelection />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/register/parent" element={<ParentRegister />} />
+            <Route path="/register/organizer" element={<OrganizerRegister />} />
+            <Route path="/organizer-portal" element={<OrganizerPortal />} />
             <Route path="/login" element={<Login />} />
             <Route path="/training" element={<Training />} />
             <Route path="/tournaments" element={<Tournaments />} />

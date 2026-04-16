@@ -72,12 +72,12 @@ export default function Home() {
                 </Link>
               ) : (
                 <Link 
-                  to="/register" 
+                  to="/select-type" 
                   onClick={playPing}
                   className="group relative bg-brand-gold text-brand-black font-display font-black text-xl px-10 py-4 uppercase italic skew-x-[-12deg] hover:scale-105 active:scale-95 transition-all"
                 >
                   <span className="skew-x-[12deg] flex items-center gap-2">
-                    Register Player Profile <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                    Register Profile <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </span>
                 </Link>
               )}
@@ -300,11 +300,11 @@ export default function Home() {
               Ready to take your game to the next level? The courts are waiting.
             </p>
             <Link 
-              to="/register" 
+              to="/select-type" 
               onClick={playPing}
               className="inline-block bg-brand-black text-brand-gold font-display font-black text-2xl px-12 py-6 uppercase italic skew-x-[-12deg] hover:scale-110 active:scale-95 transition-all shadow-2xl"
             >
-              <span className="skew-x-[12deg] block">Register Player Profile</span>
+              <span className="skew-x-[12deg] block">Register Profile</span>
             </Link>
           </motion.div>
         </div>

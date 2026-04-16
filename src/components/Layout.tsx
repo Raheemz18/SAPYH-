@@ -7,11 +7,12 @@ import Logo from './Logo';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import NotificationCenter from './NotificationCenter';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { user, profile } = useAuth();
+  const { user, profile, role } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -34,6 +35,10 @@ export function Navbar() {
     { name: 'Spotlights', path: '/spotlights' },
   ];
 
+  if (role === 'organizer' || role === 'admin') {
+    navLinks.push({ name: 'Organizer Portal', path: '/organizer-portal' });
+  }
+
   return (
     <nav
       className={cn(
@@ -43,7 +48,7 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <Logo className="scale-75 origin-left" variant={scrolled ? 'white' : 'gold'} />
+          <Logo className="origin-left" variant={scrolled ? 'white' : 'gold'} />
         </Link>
 
         {/* Desktop Nav */}
@@ -62,20 +67,23 @@ export function Navbar() {
           ))}
           
           {user ? (
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-brand-white/10 px-4 py-2 rounded-sm border border-brand-gold/20">
-                <UserIcon size={16} className="text-brand-gold" />
-                <span className="text-brand-white font-bold text-sm uppercase truncate max-w-[120px]">
-                  {profile?.name || user.email?.split('@')[0]}
-                </span>
+            <div className="flex items-center gap-6">
+              <NotificationCenter />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-brand-white/10 px-4 py-2 rounded-sm border border-brand-gold/20">
+                  <UserIcon size={16} className="text-brand-gold" />
+                  <span className="text-brand-white font-bold text-sm uppercase truncate max-w-[120px]">
+                    {profile?.name || user.email?.split('@')[0]}
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="text-brand-white/60 hover:text-brand-gold transition-colors"
+                  title="Logout"
+                >
+                  <LogOut size={20} />
+                </button>
               </div>
-              <button
-                onClick={handleLogout}
-                className="text-brand-white/60 hover:text-brand-gold transition-colors"
-                title="Logout"
-              >
-                <LogOut size={20} />
-              </button>
             </div>
           ) : (
             <div className="flex items-center gap-4">
@@ -86,7 +94,7 @@ export function Navbar() {
                 Login
               </Link>
               <Link
-                to="/register"
+                to="/select-type"
                 className="bg-brand-gold text-brand-black font-display font-black px-6 py-2 uppercase italic skew-x-[-12deg] hover:scale-105 transition-transform"
               >
                 <span className="skew-x-[12deg] block">Register Profile</span>
@@ -96,9 +104,12 @@ export function Navbar() {
         </div>
 
         {/* Mobile Toggle */}
-        <button className="md:hidden text-brand-white" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={32} /> : <Menu size={32} />}
-        </button>
+        <div className="flex items-center gap-4 md:hidden">
+          {user && <NotificationCenter />}
+          <button className="text-brand-white" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <X size={32} /> : <Menu size={32} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -152,7 +163,7 @@ export function Navbar() {
                   Login
                 </Link>
                 <Link
-                  to="/register"
+                  to="/select-type"
                   onClick={() => setIsOpen(false)}
                   className="bg-brand-gold text-brand-black font-display font-black px-6 py-3 uppercase italic text-center"
                 >
@@ -185,7 +196,7 @@ export function Footer() {
             <Link to="/tournaments" className="text-brand-white/60 hover:text-brand-gold transition-colors">Tournaments</Link>
             <Link to="/training" className="text-brand-white/60 hover:text-brand-gold transition-colors">Training & Tips</Link>
             <Link to="/spotlights" className="text-brand-white/60 hover:text-brand-gold transition-colors">Player Spotlights</Link>
-            <Link to="/register" className="text-brand-white/60 hover:text-brand-gold transition-colors">Register Profile</Link>
+            <Link to="/select-type" className="text-brand-white/60 hover:text-brand-gold transition-colors">Register Profile</Link>
           </div>
         </div>
         <div>
